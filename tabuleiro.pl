@@ -83,20 +83,16 @@ printTopOfLine([H|T]):-
         printTopOfLine(T).
 
 
-getLine(NumLinha,Lista,Linha):-exampleboard2(Lista),nth1(NumLinha,Lista,Linha).
+getLine(NumLinha,Lista,Linha):-nth1(NumLinha,Lista,Linha).
 
-getPiece(NumCol,NumLinha,Elemento):-getLine(NumLinha,Lista,Linha),nth1(NumCol,Linha,Elemento).
-
-
-
-setPiece(Board, NewBoard,X, Y, Piece):-posicao(X,Y,I),replaceLine([H|Board],I,Piece,[H|NewBoard]).
+getPiece(NumCol,NumLinha,Elemento,Lista):-getLine(NumLinha,Lista,Linha),nth1(NumCol,Linha,Elemento).
 
 
 replaceLine([_|T],0,X,[X|T]).
 
 replaceLine([H|T],I,X,[H|R]):-I1 is I-1, replaceLine(T,I1,X,R).
 
-replaceCol(List,X,Y,Piece,NewList):-getLine(Y,List,Line),replaceLine(Line,X-1,Piece,NewLine),replaceLine(List,Y-1,NewLine,NewList).
+setPiece(List,X,Y,Piece,NewList):-getLine(Y,List,Line),replaceLine(Line,X-1,Piece,NewLine),replaceLine(List,Y-1,NewLine,NewList).
 
 
 init(X,Y,Piece,NewBoard):-emptyboard(Board),printBoard(Board),replaceCol(Board,X,Y,Piece,NewBoard),printBoard(NewBoard).%com o emptyboard nao funciona, n sei pq
