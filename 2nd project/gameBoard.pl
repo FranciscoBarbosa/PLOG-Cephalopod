@@ -10,11 +10,11 @@ board1([[2,0,0,2,2,3],
 
 board2([[1,4,3,6,6,1,0,2,2],
 						[2,0,0,0,1,1,3,1,3],
-						[2,2,empty,empty,empty,emtpy,empty,0,3],
-						[3,5,empty,empty,empty,emtpy,empty,6,6],
-						[3,4,empty,empty,empty,emtpy,empty,6,3],
-            [5,2,empty,empty,empty,emtpy,empty,2,3],
-            [5,1,empty,empty,empty,emtpy,empty,6,6],
+						[2,2,empty,empty,empty,empty,empty,0,3],
+						[3,5,empty,empty,empty,empty,empty,6,6],
+						[3,4,empty,empty,empty,empty,empty,6,3],
+            [5,2,empty,empty,empty,empty,empty,2,3],
+            [5,1,empty,empty,empty,empty,empty,6,6],
             [1,2,0,1,0,4,4,4,5],
             [6,4,4,4,0,5,5,5,5]]).
 
@@ -38,7 +38,7 @@ board4([[0,1,4,3,2,0,6,5,7,1,2,4,7,1,3],
 
 
 
-translate(empty):-write('    ').
+translate(empty):-write('   ').
 translate(0):-write(' 0 ').
 translate(1):-write(' 1 ').
 translate(2):-write(' 2 ').
@@ -51,35 +51,90 @@ translate(8):-write(' 8 ').
 translate(9):-write(' 9 ').
 
 
+%%%%%PRINT BOARD1
+
 printBoard1([H|T]):-
   write(' ------------------------------'),nl,
-  printRemainingBoard([H|T],1),
+  printRemainingBoard1([H|T],1),
 %  write('|                  |'),
   write(' ------------------------------').
 
 
 
-printRemainingBoard([],_).
-printRemainingBoard([H|T],N):-
-        write('| '),printTopOfLine(H),
+printRemainingBoard1([],_).
+printRemainingBoard1([H|T],N):-
+        write('| '),printTopOfLine1(H),
         nl,
-        write('| '),printMidOfLine(H),
+        write('| '),printMidOfLine1(H),
         nl,
-        write('| '),printBotOfLine(H),
+        write('| '),printBotOfLine1(H),
         nl,
         N1 is N+1,
-        printRemainingBoard(T,N1).
+        printRemainingBoard1(T,N1).
 
-printMidOfLine([]):-write('|').
-printMidOfLine([H|T]):-write(' '),
+printMidOfLine1([]):-write('|').
+printMidOfLine1([H|T]):-write(' '),
+        translate(H),
+        write(' '),
+        printMidOfLine1(T).
+
+printBotOfLine1([]):-write('                              |').
+printBotOfLine1([H|T]):-
+        printBotOfLine1(T).
+
+printTopOfLine1([]):-write('                              |').
+printTopOfLine1([H|T]):-
+        printTopOfLine1(T).
+
+
+%%%%%PRINT BOARD2
+
+printBoard2([H|T]):-
+  write(' -----------------------------------------------'),nl,
+  printRemainingBoard2([H|T],1),
+%  write('|                  |'),
+  write(' -----------------------------------------------').
+
+
+
+printRemainingBoard2([],_).
+printRemainingBoard2([H|T],N):-
+        write('| '),printTopOfLine2(H),
+        nl,
+        write('| '),printMidOfLine2(H),
+        nl,
+        write('| '),printBotOfLine2(H),
+        nl,
+        N1 is N+1,
+        printRemainingBoard2(T,N1).
+
+printMidOfLine2(List):-printMidOfLine2(List,0).
+
+printMidOfLine2([],Bef):-write(' |').
+printMidOfLine2([H|T],Bef):-write(' '),
+Bef\=empty->(
+H=empty->write('|    ');
+H\=empty
+),
         translate(H),
         write(' '),
-        printMidOfLine(T).
+        printMidOfLine2(T,H),!.
 
-printBotOfLine([]):-write('                              |').
-printBotOfLine([H|T]):-
-        printBotOfLine(T).
+printMidOfLine2([H|T],Bef):-write(' '),
+Bef=empty->(
+H\=empty->write('|');
+H=empty
+),
+        translate(H),
+        write(' '),
+        printMidOfLine2(T,H).
 
-printTopOfLine([]):-write('                              |').
-printTopOfLine([H|T]):-
-        printTopOfLine(T).
+
+
+printBotOfLine2([]):-write('                                              |').
+printBotOfLine2([H|T]):-
+        printBotOfLine2(T).
+
+printTopOfLine2([]):-write('                                              |').
+printTopOfLine2([H|T]):-
+        printTopOfLine2(T).
