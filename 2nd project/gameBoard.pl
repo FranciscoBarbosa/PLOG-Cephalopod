@@ -54,10 +54,8 @@ translate(9):-write(' 9 ').
 %%%%%PRINT BOARD1
 
 printBoard1([H|T]):-
-  write(' ------------------------------'),nl,
-  printRemainingBoard1([H|T],1),
-%  write('|                  |'),
-  write(' ------------------------------').
+  write(' -------------------------------'),nl,
+  printRemainingBoard1([H|T],1).
 
 
 
@@ -67,74 +65,140 @@ printRemainingBoard1([H|T],N):-
         nl,
         write('| '),printMidOfLine1(H),
         nl,
-        write('| '),printBotOfLine1(H),
+				length([H|T],Num),
+        write('| '),printBotOfLine1(H,Num),
         nl,
         N1 is N+1,
         printRemainingBoard1(T,N1).
 
 printMidOfLine1([]):-write('|').
+
+printMidOfLine1([H|T]):-
+				length([H|T],N),
+				N=1,
+				write(' '),
+				translate(H),
+        write(' '),
+        printMidOfLine1(T),!.
+
 printMidOfLine1([H|T]):-write(' '),
         translate(H),
-        write(' '),
+        write('.'),
         printMidOfLine1(T).
 
-printBotOfLine1([]):-write('                              |').
-printBotOfLine1([H|T]):-
-        printBotOfLine1(T).
 
-printTopOfLine1([]):-write('                              |').
+printBotOfLine1([],Num):-Num=1,write('------------------------------|').
+printBotOfLine1([],Num):-write('|').
+
+
+
+
+printBotOfLine1([H|T],Num):-
+	Num>1,
+	write('.....'),
+        printBotOfLine1(T,Num),!.
+
+printBotOfLine1([H|T],Num):-
+        printBotOfLine1(T,Num).
+
+printTopOfLine1([]):-write('|').
+
 printTopOfLine1([H|T]):-
+	length([H|T],N),
+	N=1,
+	write('     '),
+        printTopOfLine1(T),!.
+
+printTopOfLine1([H|T]):-
+	write('    .'),
         printTopOfLine1(T).
+
+
 
 
 %%%%%PRINT BOARD2
 
 printBoard2([H|T]):-
-  write(' -----------------------------------------------'),nl,
-  printRemainingBoard2([H|T],1),
-%  write('|                  |'),
-  write(' -----------------------------------------------').
+  write(' ----------------------------------------------'),nl,
+  printRemainingBoard2([H|T],1).
 
 
 
 printRemainingBoard2([],_).
 printRemainingBoard2([H|T],N):-
-        write('| '),printTopOfLine2(H),
+        write('| '),printTopOfLine2(H,0),
         nl,
-        write('| '),printMidOfLine2(H),
+        write('| '),printMidOfLine2(H,0),
         nl,
-        write('| '),printBotOfLine2(H),
+				length([H|T],Num),
+        write('| '),printBotOfLine2(H,Num),
         nl,
         N1 is N+1,
         printRemainingBoard2(T,N1).
 
-printMidOfLine2(List):-printMidOfLine2(List,0).
+printMidOfLine2([],Bef):-write('|').
 
-printMidOfLine2([],Bef):-write(' |').
-printMidOfLine2([H|T],Bef):-write(' '),
-Bef\=empty->(
-H=empty->write('|    ');
-H\=empty
-),
-        translate(H),
+printMidOfLine2([H|T],Bef):-
+				length([H|T],N),
+				N=1,
+				write(' '),
+				translate(H),
         write(' '),
         printMidOfLine2(T,H),!.
 
-printMidOfLine2([H|T],Bef):-write(' '),
-Bef=empty->(
-H\=empty->write('|');
-H=empty
-),
-        translate(H),
-        write(' '),
+printMidOfLine2([H|T],Bef):-
+				H=empty,
+				write(' '),
+        translate(H),
+				write(' '),
+        printMidOfLine2(T,H).
+
+printMidOfLine2([H|T],Bef):-
+				(
+					Bef=empty->write('.');
+					Bef\=empty->write(' ')
+				),
+        translate(H),
+        write('.'),
         printMidOfLine2(T,H).
 
 
+printBotOfLine2([],Num):-Num=1,write('---------------------------------------------|').
+printBotOfLine2([],Num):-write('|').
+
 
-printBotOfLine2([]):-write('                                              |').
-printBotOfLine2([H|T]):-
-        printBotOfLine2(T).
 
-printTopOfLine2([]):-write('                                              |').
-printTopOfLine2([H|T]):-
-        printTopOfLine2(T).
+
+printBotOfLine2([H|T],Num):-
+	Num>1,
+	H\=empty,
+	write('.....'),
+        printBotOfLine2(T,Num),!.
+
+printBotOfLine2([H|T],Num):-
+	Num>1,
+	write('     '),
+        printBotOfLine2(T,Num),!.			
+
+printBotOfLine2([H|T],Num):-
+        printBotOfLine2(T,Num).
+
+printTopOfLine2([],Bef):-write('|').
+
+printTopOfLine2([H|T],Bef):-
+	length([H|T],N),
+	N=1,
+	write('     '),
+        printTopOfLine2(T,H),!.
+
+printTopOfLine2([H|T],Bef):-
+	H=empty,
+	write('     '),
+        printTopOfLine2(T,H).
+
+printTopOfLine2([H|T],Bef):-
+	(
+	Bef=empty->write('.   .');
+	Bef\=empty->write('    .')
+	),
+        printTopOfLine2(T,H).
