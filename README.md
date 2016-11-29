@@ -1,3 +1,1 @@
 # PLOG-Cephalopod
-
-##PLOG PROJECTS
