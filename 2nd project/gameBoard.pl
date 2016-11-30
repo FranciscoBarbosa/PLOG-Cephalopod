@@ -120,21 +120,25 @@ printTopOfLine1([H|T]):-
 
 printBoard2([H|T]):-
   write(' ----------------------------------------------'),nl,
-  printRemainingBoard2([H|T],1).
+  printRemainingBoard2([H|T],T,1).
 
 
 
-printRemainingBoard2([],_).
-printRemainingBoard2([H|T],N):-
+tailOfList(List,Tail):-[X|Tail]=List.
+
+printRemainingBoard2([],[],_).
+printRemainingBoard2([H|T],T,N):-
         write('| '),printTopOfLine2(H,0),
         nl,
         write('| '),printMidOfLine2(H,0),
         nl,
 				length([H|T],Num),
-        write('| '),printBotOfLine2(H,Num),
+				nth1(1,T,X),
+        write('| '),printBotOfLine2(H,X,Num),
         nl,
         N1 is N+1,
-        printRemainingBoard2(T,N1).
+				tailOfList(T,Tail),
+        printRemainingBoard2(T,Tail,N1).
 
 printMidOfLine2([],Bef):-write('|').
 
@@ -163,25 +167,29 @@ printMidOfLine2([H|T],Bef):-
         printMidOfLine2(T,H).
 
 
-printBotOfLine2([],Num):-Num=1,write('---------------------------------------------|').
-printBotOfLine2([],Num):-write('|').
+printBotOfLine2([],[],Num):-Num=1,write('---------------------------------------------|').
+printBotOfLine2([],[],Num):-write('|').
 
 
 
 
-printBotOfLine2([H|T],Num):-
+printBotOfLine2([H|T],[X|Y],Num):-
 	Num>1,
 	H\=empty,
 	write('.....'),
-        printBotOfLine2(T,Num),!.
+        printBotOfLine2(T,Y,Num),!.
 
-printBotOfLine2([H|T],Num):-
+printBotOfLine2([H|T],[X|Y],Num):-
 	Num>1,
-	write('     '),
-        printBotOfLine2(T,Num),!.			
+	H=empty,
+	(
+	X=empty->write('     ');
+	X\=empty->write('.....')
+	),
+        printBotOfLine2(T,Y,Num),!.			
 
-printBotOfLine2([H|T],Num):-
-        printBotOfLine2(T,Num).
+printBotOfLine2([H|T],[X,Y],Num):-
+        printBotOfLine2(T,Y,Num).
 
 printTopOfLine2([],Bef):-write('|').
 
@@ -202,3 +210,6 @@ printTopOfLine2([H|T],Bef):-
 	Bef\=empty->write('    .')
 	),
         printTopOfLine2(T,H).
+
+
+%%%%%%%%%%%%%%%%%%%Print Board3
