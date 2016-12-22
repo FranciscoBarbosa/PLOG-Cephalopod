@@ -25,35 +25,49 @@ board0([[0, 0, 1], [0,2, 0]]). % 3x2
 board([1,2,3,
        3,2,1,
        4,4,2]).
-board1([2,0,0,2,2,3,
-				2,0,1,1,0,0,
-				1,1,4,4,4,3,
-				2,1,3,2,3,3,
-				1,0,3,4,4,4]).
+board1([[2,0,0,2,2,3],
+				[2,0,1,1,0,0],
+				[1,1,4,4,4,3],
+				[2,1,3,2,3,3],
+				[1,0,3,4,4,4]]).
 
 %funcao principal
 dominos1(Sol):-
-  board0(Board),
+  %board0(Board),
+  %Sol= [S1,S2,S3,S4,S5,S6],
+  %Width is 3,
+
+  board1(Board),
+  Sol= [S1,S2,S3,S4,S5,S6,
+  S7,S8,S9,S10,S11,S12,
+  S13,S14,S15,S16,S17,S18,
+  S19,S20,S21,S22,S23,S24,
+  S25,S26,S27,S28,S29,S30],
+  Width is 6,
+
   flatten(Board,FlatBoard),
-  Sol= [S1,S2,S3,S4,S5,S6],
-  Width is 3,
+  joinSolBoard(Sol,FlatBoard,SolBoard),
+
   getAllAdjacentCells(Sol,Width,Adjacents),
 
   %domain
-  domain(Sol,1,3),
+  domain(Sol,1,15),
 
   %restricoes
-  restrainEveryValue(Sol,3),
-%  trace,
+  %talvez seja redundante mas pode aumentar eficiencia
+  restrainEveryValue(Sol,15),
   restrainAdjacentCells(Sol,Adjacents),
+  restrainBoard(Sol,FlatBoard),
 
 
 %  write(Board),nl,
 %  write(FlatBoard),nl,
-  write(Sol),nl,
-  write(Adjacents),
+  %write(Sol),nl,
+  %write(Adjacents),nl,
+write(SolBoard),nl,
 
-  labeling([],Sol).
+  labeling([],Sol),
+  write(Sol).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%% Funcoes de manipulacao de tabuleiro %%%%%%%%%
@@ -97,6 +111,16 @@ getAdjacent(Sol,Width,Index,Adjacent):-
     R \= 0,
     Div1 = Div2,
     nth0(Index1,Sol,Adjacent).
+
+%Retrona lista em que cada elemento é Sol-Board
+joinSolBoard(Sol,Board,SolBoard):-
+  joinSolBoard(Sol,Board,[],SolBoard).
+joinSolBoard([],[],Acc,Acc).
+joinSolBoard([HSol|TSol],[HBoard|TBoard],Acc,SolBoard):-
+  append(Acc,[HSol-HBoard],Acc1),
+  joinSolBoard(TSol,TBoard,Acc1,SolBoard).
+
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%% Funcoes de restricao  %%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -126,3 +150,16 @@ restrainAdjacentCell(Cell,[A1,A2,A3]):-
   (Cell #= A1) #\ ((Cell #= A2) #\ (Cell #= A3)).
 restrainAdjacentCell(Cell,[A1,A2,A3,A4]):-
   (Cell #= A1) #\ ((Cell #= A2) #\ ((Cell #= A3) #\ (Cell#=A4))).
+
+%garante a ligação entre os valores da solução e das peças tabuleiro
+%restrainBoard(Sol,FlatBoard),
+restrainBoard([],[]).
+restrainBoard([HSol|TSol],[HBoard|TBoard]):-
+  piece(HSol,Value,_);
+  piece(HSol,_,HBoard).
+%restrainBoard([HSol|TSol],[HBoard|TBoard]):-
+%  piece(HSol,Value,_),
+%  Value#=HBoard.
+%restrainBoard([HSol|TSol],[HBoard|TBoard]):-
+%  piece(HSol,_,Value),
+%  Value#=HBoard.
