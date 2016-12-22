@@ -49,7 +49,7 @@ dominos1(Sol):-
   joinSolBoard(Sol,FlatBoard,SolBoard),
 
   getAllAdjacentCells(Sol,Width,Adjacents),
-
+  getAllAdjacentCellsFunctor(SolBoard,Width,AdjacentsFunctor),
   %domain
   domain(Sol,1,15),
 
@@ -57,6 +57,7 @@ dominos1(Sol):-
   %talvez seja redundante mas pode aumentar eficiencia
   restrainEveryValue(Sol,15),
   restrainAdjacentCells(Sol,Adjacents),
+  restrainAdjacentCellsFunctor(Sol,Adjacents),
   restrainBoard(Sol,FlatBoard),
 
 
@@ -65,9 +66,10 @@ dominos1(Sol):-
   %write(Sol),nl,
   %write(Adjacents),nl,
 write(SolBoard),nl,
+write(AdjacentsFunctor),nl,
 
-  labeling([],Sol),
-  write(Sol).
+  labeling([],Sol).
+%  write(Sol).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%% Funcoes de manipulacao de tabuleiro %%%%%%%%%
@@ -111,6 +113,9 @@ getAdjacent(Sol,Width,Index,Adjacent):-
     R \= 0,
     Div1 = Div2,
     nth0(Index1,Sol,Adjacent).
+
+
+
 
 %Retrona lista em que cada elemento é Sol-Board
 joinSolBoard(Sol,Board,SolBoard):-
@@ -163,3 +168,66 @@ restrainBoard([HSol|TSol],[HBoard|TBoard]):-
 %restrainBoard([HSol|TSol],[HBoard|TBoard]):-
 %  piece(HSol,_,Value),
 %  Value#=HBoard.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%% Functor  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+getAllAdjacentCellsFunctor(SolBoard,Width,Adjacents):-
+  getAllAdjacentCellsFunctor(SolBoard,Width,0,[],Adjacents).
+getAllAdjacentCellsFunctor(SolBoard,Width,Counter,Acc,Acc):-
+  length(SolBoard,Counter).
+getAllAdjacentCellsFunctor(SolBoard,Width,Counter,Acc,Adjacents):-
+  bagof(Adj, getAdjacentFunctor(SolBoard,Width,Counter,Adj), Adjacent),
+  Counter1 is Counter + 1,
+  append(Acc,[Adjacent],Acc1),
+  getAllAdjacentCellsFunctor(SolBoard,Width,Counter1,Acc1,Adjacents).
+
+%getAdjacent(Sol,Width,Index,Adjacent):-
+%Down
+getAdjacentFunctor(Sol,Width,Index,Adjacent):-
+    length(Sol,Length),
+    Index1 is Index + Width,
+    Index1 < Length,
+    nth0(Index1,Sol,Adjacent).
+%Up
+getAdjacentFunctor(Sol,Width,Index,Adjacent):-
+    Index1 is Index - Width,
+    Index1 >= 0,
+    nth0(Index1,Sol,Adjacent).
+%Left
+getAdjacentFunctor(Sol,Width,Index,Adjacent):-
+    R is Index mod Width,
+    R \= 0,
+    Index1 is Index - 1,
+    nth0(Index1,Sol,Adjacent).
+%Rigth
+getAdjacentFunctor(Sol,Width,Index,Adjacent):-
+    Index1 is Index + 1,
+    R is Index1 mod Width,
+    R \= 0,
+    Div1 = Div2,
+    nth0(Index1,Sol,Adjacent).
+
+
+%%%%%%%%%%%%%%%%%
+
+restrainAdjacentCellsFunctor([],[]).
+restrainAdjacentCellsFunctor([H|T],[Adjacent|Adjacents]):-
+  restrainAdjacentCellFunctor(H,Adjacent),
+  restrainAdjacentCellsFunctor(T,Adjacents).
+
+%same thing but for only one cell
+restrainAdjacentCellFunctor(Cell,[A1,A2]):-
+  (Cell #= A1) #\ (Cell #= A2).
+restrainAdjacentCellFunctor(Cell,[A1,A2,A3]):-
+  (Cell #= A1) #\ ((Cell #= A2) #\ (Cell #= A3)).
+restrainAdjacentCellFunctor(Cell,[A1,A2,A3,A4]):-
+  (Cell #= A1) #\ ((Cell #= A2) #\ ((Cell #= A3) #\ (Cell#=A4))).
+
+%garante a ligação entre os valores da solução e das peças tabuleiro
+%restrainBoard(Sol,FlatBoard),
+restrainBoard([],[]).
+restrainBoard([HSol|TSol],[HBoard|TBoard]):-
+  piece(HSol,Value,_);
+  piece(HSol,_,HBoard).
