@@ -44,6 +44,9 @@ dominos1(Sol):-
 
   %restricoes
   restrainEveryValue(Sol,3),
+%  trace,
+  restrainAdjacentCells(Sol,Adjacents),
+
 
 %  write(Board),nl,
 %  write(FlatBoard),nl,
@@ -64,9 +67,7 @@ getAllAdjacentCells(Sol,Width,Adjacents):-
 getAllAdjacentCells(Sol,Width,Counter,Acc,Acc):-
   length(Sol,Counter).
 getAllAdjacentCells(Sol,Width,Counter,Acc,Adjacents):-
-%  trace,
   bagof(Adj, getAdjacent(Sol,Width,Counter,Adj), Adjacent),
-  notrace,
   Counter1 is Counter + 1,
   append(Acc,[Adjacent],Acc1),
   getAllAdjacentCells(Sol,Width,Counter1,Acc1,Adjacents).
@@ -85,19 +86,15 @@ getAdjacent(Sol,Width,Index,Adjacent):-
     nth0(Index1,Sol,Adjacent).
 %Left
 getAdjacent(Sol,Width,Index,Adjacent):-
+    R is Index mod Width,
+    R \= 0,
     Index1 is Index - 1,
-    Index1 >= 0,
-    Div1 is Index1 // Width,
-    Div2 is Index // Width,
-    Div1 = Div2,
     nth0(Index1,Sol,Adjacent).
 %Rigth
 getAdjacent(Sol,Width,Index,Adjacent):-
-    length(Sol,Length),
     Index1 is Index + 1,
-    Index1 <Length,
-    Div1 is Index1 // Width,
-    Div2 is Index // Width,
+    R is Index1 mod Width,
+    R \= 0,
     Div1 = Div2,
     nth0(Index1,Sol,Adjacent).
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -114,3 +111,18 @@ restrainEveryValue(List,Counter,MaxValue):-
   count(Counter,List,#=,2),
   Counter1 is Counter + 1,
   restrainEveryValue(List,Counter1,MaxValue).
+
+%Garante que uma(e apenas uma!) célula adjacente tem o mesmo valor que a que se analisa
+%restrainAdjacentCells(Sol,Adjacents):-
+restrainAdjacentCells([],[]).
+restrainAdjacentCells([H|T],[Adjacent|Adjacents]):-
+  restrainAdjacentCell(H,Adjacent),
+  restrainAdjacentCells(T,Adjacents).
+
+%same thing but for only one cell
+restrainAdjacentCell(Cell,[A1,A2]):-
+  (Cell #= A1) #\ (Cell #= A2).
+restrainAdjacentCell(Cell,[A1,A2,A3]):-
+  (Cell #= A1) #\ ((Cell #= A2) #\ (Cell #= A3)).
+restrainAdjacentCell(Cell,[A1,A2,A3,A4]):-
+  (Cell #= A1) #\ ((Cell #= A2) #\ ((Cell #= A3) #\ (Cell#=A4))).
