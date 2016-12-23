@@ -23,30 +23,15 @@ piece(13,3,3).
 piece(14,3,4).
 piece(15,4,4).
 
-%boards
-
 %funcao principal
 dominos1(N,Sol):-
-  %board0(Board),
-  %Sol= [S1,S2,S3,S4,S5,S6],
-  %Width is 3,
-
   board(N,Board),
   flatten(Board,FlatBoard),
   length(FlatBoard,Length),
-%  Sol= [S1,S2,S3,S4,S5,S6,
-%  S7,S8,S9,S10,S11,S12,
-%  S13,S14,S15,S16,S17,S18,
-%  S19,S20,S21,S22,S23,S24,
-%  S25,S26,S27,S28,S29,S30],
   length(Sol,Length),
-
   determineWidth(Board,Width),
-  %Width is 6,
-
   joinSolBoard(Sol,FlatBoard,SolBoard),
 
-  getAllAdjacentCells(Sol,Width,Adjacents),
   getAllAdjacentCellsFunctor(SolBoard,Width,AdjacentsFunctor),
 
   %domain
@@ -56,16 +41,8 @@ dominos1(N,Sol):-
   %restricoes
   %talvez seja redundante mas pode aumentar eficiencia
   restrainEveryValue(Sol,DomainUpperBound),
-  restrainAdjacentCells(Sol,Adjacents),
   restrainAdjacentCellsFunctor(SolBoard,AdjacentsFunctor),
   restrainBoard(Sol,FlatBoard),
-
-
-%  write(Board),nl,
-%  write(FlatBoard),nl,
-%  write(Sol),nl,
-%  write(Adjacents),nl,
-%write(SolBoard),nl,
 
   labeling([],Sol),
   write(Sol).
@@ -73,45 +50,6 @@ dominos1(N,Sol):-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%% Funcoes de manipulacao de tabuleiro %%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-%   retorna em adjacentes uma lista de listas em que cada sublista são as peças
-%adjacentes à peça com o mesmo indice no tabuleiro
-%getAllAdjacentCells(Sol,Width,Adjacents):-
-getAllAdjacentCells(Sol,Width,Adjacents):-
-  getAllAdjacentCells(Sol,Width,0,[],Adjacents).
-getAllAdjacentCells(Sol,Width,Counter,Acc,Acc):-
-  length(Sol,Counter).
-getAllAdjacentCells(Sol,Width,Counter,Acc,Adjacents):-
-  bagof(Adj, getAdjacent(Sol,Width,Counter,Adj), Adjacent),
-  Counter1 is Counter + 1,
-  append(Acc,[Adjacent],Acc1),
-  getAllAdjacentCells(Sol,Width,Counter1,Acc1,Adjacents).
-
-%getAdjacent(Sol,Width,Index,Adjacent):-
-%Down
-getAdjacent(Sol,Width,Index,Adjacent):-
-    length(Sol,Length),
-    Index1 is Index + Width,
-    Index1 < Length,
-    nth0(Index1,Sol,Adjacent).
-%Up
-getAdjacent(Sol,Width,Index,Adjacent):-
-    Index1 is Index - Width,
-    Index1 >= 0,
-    nth0(Index1,Sol,Adjacent).
-%Left
-getAdjacent(Sol,Width,Index,Adjacent):-
-    R is Index mod Width,
-    R \= 0,
-    Index1 is Index - 1,
-    nth0(Index1,Sol,Adjacent).
-%Rigth
-getAdjacent(Sol,Width,Index,Adjacent):-
-    Index1 is Index + 1,
-    R is Index1 mod Width,
-    R \= 0,
-    nth0(Index1,Sol,Adjacent).
-
 determineWidth([H|_],Width):-
   length(H,Width).
 
@@ -139,20 +77,6 @@ restrainEveryValue(List,Counter,MaxValue):-
   Counter1 is Counter + 1,
   restrainEveryValue(List,Counter1,MaxValue).
 
-%Garante que uma(e apenas uma!) célula adjacente tem o mesmo valor que a que se analisa
-%restrainAdjacentCells(Sol,Adjacents):-
-restrainAdjacentCells([],[]).
-restrainAdjacentCells([H|T],[Adjacent|Adjacents]):-
-  restrainAdjacentCell(H,Adjacent),
-  restrainAdjacentCells(T,Adjacents).
-
-%same thing but for only one cell
-restrainAdjacentCell(Cell,[A1,A2]):-
-  (Cell #= A1) #\ (Cell #= A2).
-restrainAdjacentCell(Cell,[A1,A2,A3]):-
-  (Cell #= A1) #\ ((Cell #= A2) #\ (Cell #= A3)).
-restrainAdjacentCell(Cell,[A1,A2,A3,A4]):-
-  (Cell #= A1) #\ ((Cell #= A2) #\ ((Cell #= A3) #\ (Cell#=A4))).
 
 %garante a ligação entre os valores da solução e das peças tabuleiro
 %restrainBoard(Sol,FlatBoard),
@@ -161,12 +85,6 @@ restrainBoard([HSol|TSol],[HBoard|TBoard]):-
   (piece(HSol,HBoard,_);
   piece(HSol,_,HBoard)),
   restrainBoard(TSol,TBoard).
-%restrainBoard([HSol|TSol],[HBoard|TBoard]):-
-%  piece(HSol,Value,_),
-%  Value#=HBoard.
-%restrainBoard([HSol|TSol],[HBoard|TBoard]):-
-%  piece(HSol,_,Value),
-%  Value#=HBoard.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%% Functor  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -229,21 +147,11 @@ restrainAdjacentCellFunctor(Cell-Board,[HC-HB|T]):-
 restrainAdjacentCellFunctor(Cell-Board,[HC-HB|T]):-
   restrainAdjacentCellFunctor(Cell-Board,T).
 
-%restrainAdjacentCellFunctor(Cell-Board,[A1-B1,A2-B2]):-
-  %(restrainTwoCells(Cell,A1)) #\ (restrainTwoCells(Cell,A2)).
-%  (Cell #= A1 #/\ piece(Cell,Board,A1)) #\ (Cell #= A2).
-%restrainAdjacentCellFunctor(Cell-Board,[A1-B1,A2-B2,A3-B3]):-
-  %(restrainTwoCells(Cell,A1)) #\ ((restrainTwoCells(Cell,A2)) #\ (restrainTwoCells(Cell,A3))).
-  %(Cell #= A1) #\ ((Cell #= A2) #\ (Cell #= A3)).
-%restrainAdjacentCellFunctor(Cell-Board,[A1-B1,A2-B2,A3-B3,A4-B4]):-
-  %(restrainTwoCells(Cell,A1)) #\ ((restrainTwoCells(Cell,A2)) #\ ((restrainTwoCells(Cell,A3)) #\ (restrainTwoCells(Cell,A4)))).
-%  (Cell #= A1) #\ ((Cell #= A2) #\ ((Cell #= A3) #\ (Cell#=A4))).
-
 
 %restrainTwoCells(Cell1,Cell2)
 restrainTwoCells(Sol1-Board1,Sol2-Board2):-
-  Sol1 #= Sol2.
-  %piece(Sol1,Board1,Board2).
+  Sol1 #= Sol2,
+  piece(Sol1,Board1,Board2).
 restrainTwoCells(Sol1-Board1,Sol2-Board2):-
   Sol1 #= Sol2,
   piece(Sol1,Board2,Board1).
