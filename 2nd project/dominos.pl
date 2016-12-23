@@ -26,12 +26,13 @@ piece(15,4,4).
 %boards
 
 %funcao principal
-dominos1(Sol):-
+dominos1(N,Sol):-
   %board0(Board),
   %Sol= [S1,S2,S3,S4,S5,S6],
   %Width is 3,
 
-  board1(Board),
+  board(N,Board),
+  flatten(Board,FlatBoard),
   Sol= [S1,S2,S3,S4,S5,S6,
   S7,S8,S9,S10,S11,S12,
   S13,S14,S15,S16,S17,S18,
@@ -39,10 +40,11 @@ dominos1(Sol):-
   S25,S26,S27,S28,S29,S30],
   Width is 6,
 
-  flatten(Board,FlatBoard),
+
   joinSolBoard(Sol,FlatBoard,SolBoard),
 
   getAllAdjacentCells(Sol,Width,Adjacents),
+  getAllAdjacentCellsFunctor(SolBoard,Width,AdjacentsFunctor),
 
   %domain
   domain(Sol,1,15),
@@ -51,14 +53,15 @@ dominos1(Sol):-
   %talvez seja redundante mas pode aumentar eficiencia
   restrainEveryValue(Sol,15),
   restrainAdjacentCells(Sol,Adjacents),
+  restrainAdjacentCellsFunctor(SolBoard,AdjacentsFunctor),
   restrainBoard(Sol,FlatBoard),
 
 
 %  write(Board),nl,
 %  write(FlatBoard),nl,
-  %write(Sol),nl,
-  %write(Adjacents),nl,
-write(SolBoard),nl,
+%  write(Sol),nl,
+%  write(Adjacents),nl,
+%write(SolBoard),nl,
 
   labeling([],Sol),
   write(Sol).
@@ -148,11 +151,92 @@ restrainAdjacentCell(Cell,[A1,A2,A3,A4]):-
 %restrainBoard(Sol,FlatBoard),
 restrainBoard([],[]).
 restrainBoard([HSol|TSol],[HBoard|TBoard]):-
-  piece(HSol,Value,_);
-  piece(HSol,_,HBoard).
+  (piece(HSol,HBoard,_);
+  piece(HSol,_,HBoard)),
+  restrainBoard(TSol,TBoard).
 %restrainBoard([HSol|TSol],[HBoard|TBoard]):-
 %  piece(HSol,Value,_),
 %  Value#=HBoard.
 %restrainBoard([HSol|TSol],[HBoard|TBoard]):-
 %  piece(HSol,_,Value),
 %  Value#=HBoard.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%% Functor  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+getAllAdjacentCellsFunctor(SolBoard,Width,Adjacents):-
+  getAllAdjacentCellsFunctor(SolBoard,Width,0,[],Adjacents).
+getAllAdjacentCellsFunctor(SolBoard,Width,Counter,Acc,Acc):-
+  length(SolBoard,Counter).
+getAllAdjacentCellsFunctor(SolBoard,Width,Counter,Acc,Adjacents):-
+  bagof(Adj, getAdjacentFunctor(SolBoard,Width,Counter,Adj), Adjacent),
+  Counter1 is Counter + 1,
+  append(Acc,[Adjacent],Acc1),
+  getAllAdjacentCellsFunctor(SolBoard,Width,Counter1,Acc1,Adjacents).
+
+%getAdjacent(Sol,Width,Index,Adjacent):-
+%Down
+getAdjacentFunctor(Sol,Width,Index,Adjacent):-
+    length(Sol,Length),
+    Index1 is Index + Width,
+    Index1 < Length,
+    nth0(Index1,Sol,Adjacent).
+%Up
+getAdjacentFunctor(Sol,Width,Index,Adjacent):-
+    Index1 is Index - Width,
+    Index1 >= 0,
+    nth0(Index1,Sol,Adjacent).
+%Left
+getAdjacentFunctor(Sol,Width,Index,Adjacent):-
+    R is Index mod Width,
+    R \= 0,
+    Index1 is Index - 1,
+    nth0(Index1,Sol,Adjacent).
+%Rigth
+getAdjacentFunctor(Sol,Width,Index,Adjacent):-
+    Index1 is Index + 1,
+    R is Index1 mod Width,
+    R \= 0,
+    Div1 = Div2,
+    nth0(Index1,Sol,Adjacent).
+
+
+%%%%%%%%%%%%%%%%%
+
+restrainAdjacentCellsFunctor([],[]).
+restrainAdjacentCellsFunctor([H|T],[Adjacent|Adjacents]):-
+  %trace,
+  restrainAdjacentCellFunctor(H,Adjacent),
+  restrainAdjacentCellsFunctor(T,Adjacents).
+
+
+%same thing but for only one cell
+restrainAdjacentCellFunctor(_,[]):-fail.
+restrainAdjacentCellFunctor(Cell-Board,[HC-HB|T]):-
+  Cell=HC,
+   piece(Cell,Board,HB).
+restrainAdjacentCellFunctor(Cell-Board,[HC-HB|T]):-
+  Cell=HC,
+   piece(Cell,HB,Board).
+restrainAdjacentCellFunctor(Cell-Board,[HC-HB|T]):-
+  restrainAdjacentCellFunctor(Cell-Board,T).
+
+%restrainAdjacentCellFunctor(Cell-Board,[A1-B1,A2-B2]):-
+  %(restrainTwoCells(Cell,A1)) #\ (restrainTwoCells(Cell,A2)).
+%  (Cell #= A1 #/\ piece(Cell,Board,A1)) #\ (Cell #= A2).
+%restrainAdjacentCellFunctor(Cell-Board,[A1-B1,A2-B2,A3-B3]):-
+  %(restrainTwoCells(Cell,A1)) #\ ((restrainTwoCells(Cell,A2)) #\ (restrainTwoCells(Cell,A3))).
+  %(Cell #= A1) #\ ((Cell #= A2) #\ (Cell #= A3)).
+%restrainAdjacentCellFunctor(Cell-Board,[A1-B1,A2-B2,A3-B3,A4-B4]):-
+  %(restrainTwoCells(Cell,A1)) #\ ((restrainTwoCells(Cell,A2)) #\ ((restrainTwoCells(Cell,A3)) #\ (restrainTwoCells(Cell,A4)))).
+%  (Cell #= A1) #\ ((Cell #= A2) #\ ((Cell #= A3) #\ (Cell#=A4))).
+
+
+%restrainTwoCells(Cell1,Cell2)
+restrainTwoCells(Sol1-Board1,Sol2-Board2):-
+  Sol1 #= Sol2.
+  %piece(Sol1,Board1,Board2).
+restrainTwoCells(Sol1-Board1,Sol2-Board2):-
+  Sol1 #= Sol2,
+  piece(Sol1,Board2,Board1).

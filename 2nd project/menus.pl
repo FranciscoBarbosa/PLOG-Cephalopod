@@ -51,4 +51,5 @@ printsolveBoardMenu:-
 solveBoard(N):-
   board(N,Board),
 %  trace,
-  printBoard(Board).
+  printBoard(Board),
+  dominos1(N,Sol).

@@ -62,7 +62,7 @@ printBoard([H|T]):-
 	length(H,Length),
 	write(' '),
   printHorizontalSeparator(Length,'_'),nl,
-  printRemainingBoard([H|T]).
+  printRemainingBoard([H|T]),nl.
 
 %printHorizontalSeparator(N,Separator)
 printHorizontalSeparator(1,Separator):-
