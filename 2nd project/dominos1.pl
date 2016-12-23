@@ -57,7 +57,7 @@ dominos1(Sol):-
   %talvez seja redundante mas pode aumentar eficiencia
   restrainEveryValue(Sol,15),
   restrainAdjacentCells(Sol,Adjacents),
-%  restrainAdjacentCellsFunctor(SolBoard,AdjacentsFunctor),
+  restrainAdjacentCellsFunctor(SolBoard,AdjacentsFunctor),
   restrainBoard(Sol,FlatBoard),
 
 
@@ -221,15 +221,25 @@ restrainAdjacentCellsFunctor([H|T],[Adjacent|Adjacents]):-
 
 
 %same thing but for only one cell
-restrainAdjacentCellFunctor(Cell-Board,[A1-B1,A2-B2]):-
+restrainAdjacentCellFunctor(_,[]):-fail.
+restrainAdjacentCellFunctor(Cell-Board,[HC-HB|T]):-
+  Cell=HC,
+   piece(Cell,Board,HB).
+restrainAdjacentCellFunctor(Cell-Board,[HC-HB|T]):-
+  Cell=HC,
+   piece(Cell,HB,Board).
+restrainAdjacentCellFunctor(Cell-Board,[HC-HB|T]):-
+  restrainAdjacentCellFunctor(Cell-Board,T).
+
+%restrainAdjacentCellFunctor(Cell-Board,[A1-B1,A2-B2]):-
   %(restrainTwoCells(Cell,A1)) #\ (restrainTwoCells(Cell,A2)).
-  (Cell #= A1 #/\ piece(Cell,Board,A1)) #\ (Cell #= A2).
-restrainAdjacentCellFunctor(Cell-Board,[A1-B1,A2-B2,A3-B3]):-
+%  (Cell #= A1 #/\ piece(Cell,Board,A1)) #\ (Cell #= A2).
+%restrainAdjacentCellFunctor(Cell-Board,[A1-B1,A2-B2,A3-B3]):-
   %(restrainTwoCells(Cell,A1)) #\ ((restrainTwoCells(Cell,A2)) #\ (restrainTwoCells(Cell,A3))).
-  (Cell #= A1) #\ ((Cell #= A2) #\ (Cell #= A3)).
-restrainAdjacentCellFunctor(Cell-Board,[A1-B1,A2-B2,A3-B3,A4-B4]):-
+  %(Cell #= A1) #\ ((Cell #= A2) #\ (Cell #= A3)).
+%restrainAdjacentCellFunctor(Cell-Board,[A1-B1,A2-B2,A3-B3,A4-B4]):-
   %(restrainTwoCells(Cell,A1)) #\ ((restrainTwoCells(Cell,A2)) #\ ((restrainTwoCells(Cell,A3)) #\ (restrainTwoCells(Cell,A4)))).
-  (Cell #= A1) #\ ((Cell #= A2) #\ ((Cell #= A3) #\ (Cell#=A4))).
+%  (Cell #= A1) #\ ((Cell #= A2) #\ ((Cell #= A3) #\ (Cell#=A4))).
 
 
 %restrainTwoCells(Cell1,Cell2)
