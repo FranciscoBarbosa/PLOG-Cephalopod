@@ -57,7 +57,7 @@ dominos1(Sol):-
   %talvez seja redundante mas pode aumentar eficiencia
   restrainEveryValue(Sol,15),
   restrainAdjacentCells(Sol,Adjacents),
-  restrainAdjacentCellsFunctor(Sol,Adjacents),
+%  restrainAdjacentCellsFunctor(SolBoard,AdjacentsFunctor),
   restrainBoard(Sol,FlatBoard),
 
 
@@ -65,11 +65,11 @@ dominos1(Sol):-
 %  write(FlatBoard),nl,
   %write(Sol),nl,
   %write(Adjacents),nl,
-write(SolBoard),nl,
-write(AdjacentsFunctor),nl,
+%write(SolBoard),nl,
+%write(AdjacentsFunctor),nl,
 
-  labeling([],Sol).
-%  write(Sol).
+  labeling([],Sol),
+  write(Sol).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%% Funcoes de manipulacao de tabuleiro %%%%%%%%%
@@ -160,8 +160,9 @@ restrainAdjacentCell(Cell,[A1,A2,A3,A4]):-
 %restrainBoard(Sol,FlatBoard),
 restrainBoard([],[]).
 restrainBoard([HSol|TSol],[HBoard|TBoard]):-
-  piece(HSol,Value,_);
-  piece(HSol,_,HBoard).
+  (piece(HSol,HBoard,_);
+  piece(HSol,_,HBoard)),
+  restrainBoard(TSol,TBoard).
 %restrainBoard([HSol|TSol],[HBoard|TBoard]):-
 %  piece(HSol,Value,_),
 %  Value#=HBoard.
@@ -214,20 +215,27 @@ getAdjacentFunctor(Sol,Width,Index,Adjacent):-
 
 restrainAdjacentCellsFunctor([],[]).
 restrainAdjacentCellsFunctor([H|T],[Adjacent|Adjacents]):-
+  %trace,
   restrainAdjacentCellFunctor(H,Adjacent),
   restrainAdjacentCellsFunctor(T,Adjacents).
 
+
 %same thing but for only one cell
-restrainAdjacentCellFunctor(Cell,[A1,A2]):-
-  (Cell #= A1) #\ (Cell #= A2).
-restrainAdjacentCellFunctor(Cell,[A1,A2,A3]):-
+restrainAdjacentCellFunctor(Cell-Board,[A1-B1,A2-B2]):-
+  %(restrainTwoCells(Cell,A1)) #\ (restrainTwoCells(Cell,A2)).
+  (Cell #= A1 #/\ piece(Cell,Board,A1)) #\ (Cell #= A2).
+restrainAdjacentCellFunctor(Cell-Board,[A1-B1,A2-B2,A3-B3]):-
+  %(restrainTwoCells(Cell,A1)) #\ ((restrainTwoCells(Cell,A2)) #\ (restrainTwoCells(Cell,A3))).
   (Cell #= A1) #\ ((Cell #= A2) #\ (Cell #= A3)).
-restrainAdjacentCellFunctor(Cell,[A1,A2,A3,A4]):-
+restrainAdjacentCellFunctor(Cell-Board,[A1-B1,A2-B2,A3-B3,A4-B4]):-
+  %(restrainTwoCells(Cell,A1)) #\ ((restrainTwoCells(Cell,A2)) #\ ((restrainTwoCells(Cell,A3)) #\ (restrainTwoCells(Cell,A4)))).
   (Cell #= A1) #\ ((Cell #= A2) #\ ((Cell #= A3) #\ (Cell#=A4))).
 
-%garante a ligação entre os valores da solução e das peças tabuleiro
-%restrainBoard(Sol,FlatBoard),
-restrainBoard([],[]).
-restrainBoard([HSol|TSol],[HBoard|TBoard]):-
-  piece(HSol,Value,_);
-  piece(HSol,_,HBoard).
+
+%restrainTwoCells(Cell1,Cell2)
+restrainTwoCells(Sol1-Board1,Sol2-Board2):-
+  Sol1 #= Sol2.
+  %piece(Sol1,Board1,Board2).
+restrainTwoCells(Sol1-Board1,Sol2-Board2):-
+  Sol1 #= Sol2,
+  piece(Sol1,Board2,Board1).
