@@ -118,229 +118,135 @@ printBotOfLine([H|T]):-
 	write('......'),
   printBotOfLine(T).
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+printSolution([H|T],Solution):-
+	length(H,Length),
+	write(' '),
+  printHorizontalSeparator(Length,'_'),nl,
+  printRemainingSolution([H|T],Solution,0),nl.
 
-
-
-%%%%%PRINT BOARD2
-
-printBoard2([H|T]):-
-  write(' ----------------------------------------------'),nl,
-  printRemainingBoard2([H|T],T,1).
-
-
-
-tailOfList(List,Tail):-[X|Tail]=List.
-
-printRemainingBoard2([],[],_).
-
-printRemainingBoard2([H|T],[],N):-
-write('| '),printTopOfLine2(H,0),
-nl,
-write('| '),printMidOfLine2(H,0),
-nl,
-length([H|T],Num),
-write('| '),printBotOfLine2(H,[],Num),
-nl,
-N1 is N+1,
-printRemainingBoard2(T,[],N1).
-
-
-printRemainingBoard2([H|T],T,N):-
-        write('| '),printTopOfLine2(H,0),
-        nl,
-        write('| '),printMidOfLine2(H,0),
-        nl,
-				length([H|T],Num),
-				nth1(1,T,X),
-        write('| '),printBotOfLine2(H,X,Num),
-        nl,
-        N1 is N+1,
-				tailOfList(T,Tail),
-        printRemainingBoard2(T,Tail,N1).
-
-printMidOfLine2([],Bef):-write('|').
-
-printMidOfLine2([H|T],Bef):-
-				length([H|T],N),
-				N=1,
-				write(' '),
-				translate(H),
-        write(' '),
-        printMidOfLine2(T,H),!.
-
-printMidOfLine2([H|T],Bef):-
-				H=empty,
-				write(' '),
-        translate(H),
-				write(' '),
-        printMidOfLine2(T,H).
-
-printMidOfLine2([H|T],Bef):-
-				(
-					Bef=empty->write('.');
-					Bef\=empty->write(' ')
-				),
-        translate(H),
-        write('.'),
-        printMidOfLine2(T,H).
-
-
-printBotOfLine2([],[],Num):-Num=1,nl,write('-----------------------------------------------|').
-printBotOfLine2([],[],Num):-write('|').
-printBotOfLine2([H|T],[],Num):-
-	H\=empty,
-	write('     '),
-	printBotOfLine2(T,[],Num).
-
-
-
-printBotOfLine2([H|T],[X|Y],Num):-
-	Num>1,
-	H\=empty,
-	write('.....'),
-        printBotOfLine2(T,Y,Num),!.
-
-printBotOfLine2([H|T],[X|Y],Num):-
-	Num>1,
-	H=empty,
-	(
-	X=empty->write('     ');
-	X\=empty->write('.....')
-	),
-        printBotOfLine2(T,Y,Num),!.			
-
-printBotOfLine2([H|T],[X,Y],Num):-
-        printBotOfLine2(T,Y,Num).
-
-printTopOfLine2([],Bef):-write('|').
-
-printTopOfLine2([H|T],Bef):-
-	length([H|T],N),
-	N=1,
-	write('     '),
-        printTopOfLine2(T,H),!.
-
-printTopOfLine2([H|T],Bef):-
-	H=empty,
-	write('     '),
-        printTopOfLine2(T,H).
-
-printTopOfLine2([H|T],Bef):-
-	(
-	Bef=empty->write('.   .');
-	Bef\=empty->write('    .')
-	),
-        printTopOfLine2(T,H).
-
-
-%%%%%%%%%%%%%%%%%%%Print Board3
-
-printBoard3([H|T]):-
-  write(' ------------------------------------------'),nl,
-  printRemainingBoard3([H|T],1).
-
-
-printRemainingBoard3([],_).
-
-printRemainingBoard3([H|T],N):-
-write('| '),printTopOfLine2(H,0),
-nl,
-write('| '),printMidOfLine2(H,0),
-nl,
-length([H|T],Num),
-write('| '),printBotOfLine3(H,Num),
-nl,
-N1 is N+1,
-printRemainingBoard3(T,N1).
-
-
-printBotOfLine3([],Num):-Num=1,write('-----------------------------------------|').
-printBotOfLine3([],Num):-write('|').
-
-
-printBotOfLine3([H|T],Num):-
-	Num>1,
-	H\=empty,
-	write('.....'),
-        printBotOfLine3(T,Num),!.
-
-printBotOfLine3([H|T],Num):-
-	Num>1,
-	H=empty,
-	(
-	X=empty->write('     ');
-	X\=empty->write('.....')
-	),
-        printBotOfLine3(T,Num),!.			
-
-printBotOfLine3([H|T],Num):-
-        printBotOfLine3(T,Num).
-
-
-%PrintBoard4
-
-printBoard4([H|T]):-
-  write(' ----------------------------------------------------------------------------'),nl,
-  printRemainingBoard4([H|T],T,1).
-
-
-	printRemainingBoard4([H|T],[],N):-
-	write('| '),printTopOfLine2(H,0),
+printRemainingSolution([H],Solution,Index):-
+	length(H,Length),
+	write('|'),printTopOfLine(H,Solution,Index),
 	nl,
-	write('| '),printMidOfLine2(H,0),
+	write('|'),printMidOfLine(H,Solution,Index),
 	nl,
-	length([H|T],Num),
-	write('| '),printBotOfLine4(H,[],Num),
-	nl,
-	N1 is N+1,
-	printRemainingBoard4(T,[],N1).
+	write('|'),printBotOfLine(H,Solution,Index,Length).
+printRemainingSolution([H|T],Solution,Index):-
+	length(H,Length),
+  write('|'),printTopOfLine(H,Solution,Index),
+  nl,
+  write('|'),printMidOfLine(H,Solution,Index),
+  nl,
+  write('|'),printBotOfLine(H,Solution,Index,Length),
+  nl,
+	NewIndex is Index+Length,
+  printRemainingSolution(T,Solution,NewIndex).
 
+printTopOfLine([H],Sol,Index):-
+	write('     |').
+printTopOfLine([H|T],Sol,Index):-
+	NewIndex is Index + 1,
+	length(Sol,Length),
+	NewIndex < Length,
+	nth0(Index,Sol,Elem1),
+	nth0(NewIndex,Sol,Elem2),
+	Elem1=Elem2,
+	write('     '),
+	write(' '),
+	printTopOfLine(T,Sol,NewIndex).
+printTopOfLine([H|T],Sol,Index):-
+	write('     '),
+	write('|'),
+	NewIndex is Index + 1,
+	printTopOfLine(T,Sol,NewIndex).
 
-	printRemainingBoard4([H|T],T,N):-
-	        write('| '),printTopOfLine2(H,0),
-	        nl,
-	        write('| '),printMidOfLine2(H,0),
-	        nl,
-					length([H|T],Num),
-					nth1(1,T,X),
-	        write('| '),printBotOfLine4(H,X,Num),
-	        nl,
-	        N1 is N+1,
-					tailOfList(T,Tail),
-	        printRemainingBoard4(T,Tail,N1).
+printMidOfLine([H],Sol,Index):-
+	printPiece(H),
+	write('|').
+printMidOfLine([H|T],Sol,Index):-
+	NewIndex is Index + 1,
+	length(Sol,Length),
+	NewIndex < Length,
+	nth0(Index,Sol,Elem1),
+	nth0(NewIndex,Sol,Elem2),
+	Elem1=Elem2,
+	printPiece(H),
+	write(' '),
+	printMidOfLine(T,Sol,NewIndex).
+printMidOfLine([H|T],Sol,Index):-
+	printPiece(H),
+	write('|'),
+	NewIndex is Index + 1,
+	printMidOfLine(T,Sol,NewIndex).
 
-					printRemainingBoard4([],[],_).
-
-
-
-
-
-
-
-					printBotOfLine4([],[],Num):-Num=1,nl,write('-----------------------------------------------------------------------------|').
-					printBotOfLine4([],[],Num):-write('|').
-					printBotOfLine4([H|T],[],Num):-
-						H\=empty,
-						write('     '),
-						printBotOfLine4(T,[],Num).
-
-
-
-					printBotOfLine4([H|T],[X|Y],Num):-
-						Num>1,
-						H\=empty,
-						write('.....'),
-					        printBotOfLine4(T,Y,Num),!.
-
-					printBotOfLine4([H|T],[X|Y],Num):-
-						Num>1,
-						H=empty,
-						(
-						X=empty->write('     ');
-						X\=empty->write('.....')
-						),
-					        printBotOfLine4(T,Y,Num),!.			
-
-					printBotOfLine4([H|T],[X,Y],Num):-
-					        printBotOfLine4(T,Y,Num).
+printBotOfLine([H],Sol,Index,LineLength):-
+	NewIndex is Index + LineLength,
+	length(Sol,Length),
+	NewIndex >= Length,
+	write('_____'),
+	write('|').
+printBotOfLine([H],Sol,Index,_):-
+	NewIndex is Index - 1,
+	NewIndex >= 0,
+	nth0(Index,Sol,Elem1),
+	nth0(NewIndex,Sol,Elem2),
+	Elem1=Elem2,
+	write('_____'),
+	write('|').
+printBotOfLine([H],Sol,Index,LineLength):-
+	NewIndex is Index + LineLength,
+	length(Sol,Length),
+	NewIndex < Length,
+	nth0(Index,Sol,Elem1),
+	nth0(NewIndex,Sol,Elem2),
+	Elem1\=Elem2,
+	write('_____'),
+	write('|').
+printBotOfLine([H],Sol,Index,_):-
+	write('     |').
+printBotOfLine([H|T],Sol,Index,LineLength):-
+	NewIndex is Index + 1,
+	length(Sol,Length),
+	NewIndex < Length,
+	nth0(Index,Sol,Elem1),
+	nth0(NewIndex,Sol,Elem2),
+	Elem1=Elem2,
+	write('_____'),
+	write('_'),
+	printBotOfLine(T,Sol,NewIndex,LineLength).
+printBotOfLine([H|T],Sol,Index,LineLength):-
+	NewIndex is Index - 1,
+	NewIndex >= 0,
+	nth0(Index,Sol,Elem1),
+	nth0(NewIndex,Sol,Elem2),
+	Elem1=Elem2,
+	write('_____'),
+	write('|'),
+	NewIndex2 is Index + 1,
+	printBotOfLine(T,Sol,NewIndex2,LineLength).
+printBotOfLine([H|T],Sol,Index,LineLength):-
+	NewIndex is Index + LineLength,
+	length(Sol,Length),
+	NewIndex < Length,
+	nth0(Index,Sol,Elem1),
+	nth0(NewIndex,Sol,Elem2),
+	Elem1\=Elem2,
+	write('_____'),
+	write('|'),
+	NewIndex2 is Index + 1,
+	printBotOfLine(T,Sol,NewIndex2,LineLength).
+printBotOfLine([H|T],Sol,Index,LineLength):-
+	NewIndex is Index + LineLength,
+	length(Sol,Length),
+	NewIndex >= Length,
+	write('_____'),
+	write('|'),
+	NewIndex2 is Index + 1,
+	printBotOfLine(T,Sol,NewIndex2,LineLength).
+printBotOfLine([H|T],Sol,Index,LineLength):-
+	write('     '),
+	write('|'),
+	NewIndex is Index + 1,
+	printBotOfLine(T,Sol,NewIndex,LineLength).

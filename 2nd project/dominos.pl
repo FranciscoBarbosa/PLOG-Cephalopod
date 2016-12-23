@@ -45,7 +45,7 @@ dominos1(N,Sol):-
   restrainBoard(Sol,FlatBoard),
 
   labeling([],Sol),
-  write(Sol).
+  write(Sol),nl.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%% Funcoes de manipulacao de tabuleiro %%%%%%%%%
@@ -69,7 +69,7 @@ joinSolBoard([HSol|TSol],[HBoard|TBoard],Acc,SolBoard):-
 %Garante que cada valor aparece 2 vezes no tabuleiro resolvido
 restrainEveryValue(List,MaxValue):-
   restrainEveryValue(List,1,MaxValue).
-restrainEveryValue(List,Counter,MaxValue):-
+restrainEveryValue(_,Counter,MaxValue):-
   Counter > MaxValue.
 restrainEveryValue(List,Counter,MaxValue):-
   %exactly(Counter,List,2),
@@ -92,7 +92,7 @@ restrainBoard([HSol|TSol],[HBoard|TBoard]):-
 
 getAllAdjacentCellsFunctor(SolBoard,Width,Adjacents):-
   getAllAdjacentCellsFunctor(SolBoard,Width,0,[],Adjacents).
-getAllAdjacentCellsFunctor(SolBoard,Width,Counter,Acc,Acc):-
+getAllAdjacentCellsFunctor(SolBoard,_,Counter,Acc,Acc):-
   length(SolBoard,Counter).
 getAllAdjacentCellsFunctor(SolBoard,Width,Counter,Acc,Adjacents):-
   bagof(Adj, getAdjacentFunctor(SolBoard,Width,Counter,Adj), Adjacent),
@@ -123,7 +123,6 @@ getAdjacentFunctor(Sol,Width,Index,Adjacent):-
     Index1 is Index + 1,
     R is Index1 mod Width,
     R \= 0,
-    Div1 = Div2,
     nth0(Index1,Sol,Adjacent).
 
 
@@ -138,13 +137,13 @@ restrainAdjacentCellsFunctor([H|T],[Adjacent|Adjacents]):-
 
 %same thing but for only one cell
 restrainAdjacentCellFunctor(_,[]):-fail.
-restrainAdjacentCellFunctor(Cell-Board,[HC-HB|T]):-
+restrainAdjacentCellFunctor(Cell-Board,[HC-HB|_]):-
   Cell=HC,
-   piece(Cell,Board,HB).
-restrainAdjacentCellFunctor(Cell-Board,[HC-HB|T]):-
+  piece(Cell,Board,HB).
+restrainAdjacentCellFunctor(Cell-Board,[HC-HB|_]):-
   Cell=HC,
    piece(Cell,HB,Board).
-restrainAdjacentCellFunctor(Cell-Board,[HC-HB|T]):-
+restrainAdjacentCellFunctor(Cell-Board,[_|T]):-
   restrainAdjacentCellFunctor(Cell-Board,T).
 
 

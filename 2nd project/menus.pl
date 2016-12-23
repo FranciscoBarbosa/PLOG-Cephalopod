@@ -53,4 +53,4 @@ solveBoard(N):-
 %  trace,
   printBoard(Board),
   dominos1(N,Sol),
-  printSolution(Board,Solution).
+  printSolution(Board,Sol).
