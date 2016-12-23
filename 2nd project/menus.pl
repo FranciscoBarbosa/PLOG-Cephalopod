@@ -1,10 +1,10 @@
-:-[gameBoard].
+
 
 mainMenu:-
   printMainMenu,
   getChar(Input),
   (
-    Input = '1' -> solveBoardMenu, mainMenu;
+    Input = '1' -> solveBoardMenu;%, mainMenu;
     Input = '2';
 
     nl,
@@ -25,11 +25,11 @@ solveBoardMenu:-
   getChar(Input),
   (
     Input = '1' -> solveBoard(1);
-    Input = '2' -> write('2');
-    Input = '3' -> write('3');
-    Input = '4' -> write('4');
-    Input = '5' -> write('5');
-    Input = '6' -> write('6');
+    Input = '2' -> solveBoard(2);
+    Input = '3' -> solveBoard(3);
+    Input = '4' -> solveBoard(4);
+    Input = '5' -> solveBoard(5);
+    Input = '6' -> solveBoard(6);
     Input = '7';
 
     nl,
@@ -50,4 +50,5 @@ printsolveBoardMenu:-
 
 solveBoard(N):-
   board(N,Board),
+%  trace,
   printBoard(Board).

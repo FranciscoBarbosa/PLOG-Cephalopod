@@ -7,11 +7,11 @@ board(4, [[0, 3, 0, 2, 4], [0, 0, 4, 0, 1], [3, 1, 0, 2, 2], [1, 1, 1, 1, 2]]). 
 board(5, [[3, 1, 2, 2, 4, 1], [1, 2, 0, 2, 0, 0], [2, 4, 0, 1, 3, 2], [4, 0, 1, 1, 3, 0]]). % 6x4
 board(6, [[2, 0, 0, 2, 2, 3], [2, 0, 1, 1, 0, 0], [1, 1, 4, 4, 4, 3], [2, 1, 3, 2, 3, 3], [1, 0, 3, 4, 4, 4]]). % 6x5
 
-board1([[2,0,0,2,2,3],
-				[2,0,1,1,0,0],
-				[1,1,4,4,4,3],
-				[2,1,3,2,3,3],
-				[1,0,3,4,4,4]]).
+%board1([[2,0,0,2,2,3],
+%				[2,0,1,1,0,0],
+%				[1,1,4,4,4,3],
+%				[2,1,3,2,3,3],
+%				[1,0,3,4,4,4]]).
 
 board2([[1,4,3,6,6,1,0,2,2],
 						[2,0,0,0,1,1,3,1,3],
@@ -43,80 +43,81 @@ board4([[0,1,4,3,2,0,6,5,7,1,2,4,7,1,3],
 
 
 
-translate(empty):-write('   ').
-translate(0):-write(' 0 ').
-translate(1):-write(' 1 ').
-translate(2):-write(' 2 ').
-translate(3):-write(' 3 ').
-translate(4):-write(' 4 ').
-translate(5):-write(' 5 ').
-translate(6):-write(' 6 ').
-translate(7):-write(' 7 ').
-translate(8):-write(' 8 ').
-translate(9):-write(' 9 ').
+printPiece(empty):-write('     ').
+printPiece(0):-write('  0  ').
+printPiece(1):-write('  1  ').
+printPiece(2):-write('  2  ').
+printPiece(3):-write('  3  ').
+printPiece(4):-write('  4  ').
+printPiece(5):-write('  5  ').
+printPiece(6):-write('  6  ').
+printPiece(7):-write('  7  ').
+printPiece(8):-write('  8  ').
+printPiece(9):-write('  9  ').
 
 
 %%%%%PRINT BOARD1
 
 printBoard([H|T]):-
-  write(' -------------------------------'),nl,
-  printRemainingBoard([H|T],1).
+	length(H,Length),
+	write(' '),
+  printHorizontalSeparator(Length,'_'),nl,
+  printRemainingBoard([H|T]).
 
+%printHorizontalSeparator(N,Separator)
+printHorizontalSeparator(1,Separator):-
+	write(Separator),
+	write(Separator),
+	write(Separator),
+	write(Separator),
+	write(Separator).
+printHorizontalSeparator(N,Separator):-
+	write(Separator),
+	write(Separator),
+	write(Separator),
+	write(Separator),
+	write(Separator),
+	write(Separator),
+	N1 is N-1,
+	printHorizontalSeparator(N1,Separator).
 
+printRemainingBoard([H]):-
+	length(H,Length),
+	write('|'),printTopOfLine(H),
+	nl,
+	write('|'),printMidOfLine(H),
+	nl,
+	write('|'),printHorizontalSeparator(Length,'_'),write('|').
+printRemainingBoard([H|T]):-
+%	trace,
+  write('|'),printTopOfLine(H),
+  nl,
+  write('|'),printMidOfLine(H),
+  nl,
+  write('|'),printBotOfLine(H),
+  nl,
+  printRemainingBoard(T).
 
-printRemainingBoard([],_).
-printRemainingBoard([H|T],N):-
-        write('| '),printTopOfLine(H),
-        nl,
-        write('| '),printMidOfLine(H),
-        nl,
-				length([H|T],Num),
-        write('| '),printBotOfLine(H,Num),
-        nl,
-        N1 is N+1,
-        printRemainingBoard(T,N1).
-
-printMidOfLine([]):-write('|').
-
-printMidOfLine([H|T]):-
-				length([H|T],N),
-				N=1,
-				write(' '),
-				translate(H),
-        write(' '),
-        printMidOfLine(T),!.
-
-printMidOfLine([H|T]):-write(' '),
-        translate(H),
-        write('.'),
-        printMidOfLine1(T).
-
-
-printBotOfLine([],Num):-Num=1,write('------------------------------|').
-printBotOfLine([],Num):-write('|').
-
-
-
-
-printBotOfLine([H|T],Num):-
-	Num>1,
-	write('.....'),
-        printBotOfLine(T,Num),!.
-
-printBotOfLine([H|T],Num):-
-        printBotOfLine(T,Num).
-
-printTopOfLine([]):-write('|').
-
+printTopOfLine([H]):-
+	write('     |').
 printTopOfLine([H|T]):-
-	length([H|T],N),
-	N=1,
 	write('     '),
-        printTopOfLine(T),!.
+	write('.'),
+	printTopOfLine(T).
 
-printTopOfLine([H|T]):-
-	write('    .'),
-        printTopOfLine(T).
+printMidOfLine([H]):-
+	printPiece(H),
+	write('|').
+printMidOfLine([H|T]):-
+	printPiece(H),
+	write('.'),
+  printMidOfLine(T).
+
+printBotOfLine([H]):-write('.....|').
+printBotOfLine([H|T]):-
+	write('......'),
+  printBotOfLine(T).
+
 
 
 

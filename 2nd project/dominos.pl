@@ -2,8 +2,8 @@
 :-use_module(library(lists)).
 :- [utils].
 :- [menus].
-
-:-mainMenu.
+:- [gameBoard].
+%:-mainMenu.
 
 %peças
 %piece(Num,Valor1,Valor2)
@@ -24,15 +24,6 @@ piece(14,3,4).
 piece(15,4,4).
 
 %boards
-board0([[0, 0, 1], [0,2, 0]]). % 3x2
-board([1,2,3,
-       3,2,1,
-       4,4,2]).
-board1([[2,0,0,2,2,3],
-				[2,0,1,1,0,0],
-				[1,1,4,4,4,3],
-				[2,1,3,2,3,3],
-				[1,0,3,4,4,4]]).
 
 %funcao principal
 dominos1(Sol):-
@@ -112,7 +103,6 @@ getAdjacent(Sol,Width,Index,Adjacent):-
     Index1 is Index + 1,
     R is Index1 mod Width,
     R \= 0,
-    Div1 = Div2,
     nth0(Index1,Sol,Adjacent).
 
 %Retrona lista em que cada elemento é Sol-Board
