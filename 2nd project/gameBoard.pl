@@ -1,12 +1,17 @@
 :-use_module(library(lists)).
 
-
+board(1, [[0, 0, 1],[0, 2, 0]]). % 3x2
+board(2, [[2, 0, 0, 3], [1, 0, 0, 0], [0, 1, 1, 4]]). % 4x3
+board(3, [[0, 0, 4, 0], [2, 1, 1, 0], [1, 2, 0, 3], [1, 3, 0, 1]]). % 4x4
+board(4, [[0, 3, 0, 2, 4], [0, 0, 4, 0, 1], [3, 1, 0, 2, 2], [1, 1, 1, 1, 2]]). % 5x4
+board(5, [[3, 1, 2, 2, 4, 1], [1, 2, 0, 2, 0, 0], [2, 4, 0, 1, 3, 2], [4, 0, 1, 1, 3, 0]]). % 6x4
+board(6, [[2, 0, 0, 2, 2, 3], [2, 0, 1, 1, 0, 0], [1, 1, 4, 4, 4, 3], [2, 1, 3, 2, 3, 3], [1, 0, 3, 4, 4, 4]]). % 6x5
 
 board1([[2,0,0,2,2,3],
-						[2,0,1,1,0,0],
-						[1,1,4,4,4,3],
-						[2,1,3,2,3,3],
-						[1,0,3,4,4,4]]).
+				[2,0,1,1,0,0],
+				[1,1,4,4,4,3],
+				[2,1,3,2,3,3],
+				[1,0,3,4,4,4]]).
 
 board2([[1,4,3,6,6,1,0,2,2],
 						[2,0,0,0,1,1,3,1,3],
@@ -53,65 +58,65 @@ translate(9):-write(' 9 ').
 
 %%%%%PRINT BOARD1
 
-printBoard1([H|T]):-
+printBoard([H|T]):-
   write(' -------------------------------'),nl,
-  printRemainingBoard1([H|T],1).
+  printRemainingBoard([H|T],1).
 
 
 
-printRemainingBoard1([],_).
-printRemainingBoard1([H|T],N):-
-        write('| '),printTopOfLine1(H),
+printRemainingBoard([],_).
+printRemainingBoard([H|T],N):-
+        write('| '),printTopOfLine(H),
         nl,
-        write('| '),printMidOfLine1(H),
+        write('| '),printMidOfLine(H),
         nl,
 				length([H|T],Num),
-        write('| '),printBotOfLine1(H,Num),
+        write('| '),printBotOfLine(H,Num),
         nl,
         N1 is N+1,
-        printRemainingBoard1(T,N1).
+        printRemainingBoard(T,N1).
 
-printMidOfLine1([]):-write('|').
+printMidOfLine([]):-write('|').
 
-printMidOfLine1([H|T]):-
+printMidOfLine([H|T]):-
 				length([H|T],N),
 				N=1,
 				write(' '),
 				translate(H),
         write(' '),
-        printMidOfLine1(T),!.
+        printMidOfLine(T),!.
 
-printMidOfLine1([H|T]):-write(' '),
+printMidOfLine([H|T]):-write(' '),
         translate(H),
         write('.'),
         printMidOfLine1(T).
 
 
-printBotOfLine1([],Num):-Num=1,write('------------------------------|').
-printBotOfLine1([],Num):-write('|').
+printBotOfLine([],Num):-Num=1,write('------------------------------|').
+printBotOfLine([],Num):-write('|').
 
 
 
 
-printBotOfLine1([H|T],Num):-
+printBotOfLine([H|T],Num):-
 	Num>1,
 	write('.....'),
-        printBotOfLine1(T,Num),!.
+        printBotOfLine(T,Num),!.
 
-printBotOfLine1([H|T],Num):-
-        printBotOfLine1(T,Num).
+printBotOfLine([H|T],Num):-
+        printBotOfLine(T,Num).
 
-printTopOfLine1([]):-write('|').
+printTopOfLine([]):-write('|').
 
-printTopOfLine1([H|T]):-
+printTopOfLine([H|T]):-
 	length([H|T],N),
 	N=1,
 	write('     '),
-        printTopOfLine1(T),!.
+        printTopOfLine(T),!.
 
-printTopOfLine1([H|T]):-
+printTopOfLine([H|T]):-
 	write('    .'),
-        printTopOfLine1(T).
+        printTopOfLine(T).
 
 
 
