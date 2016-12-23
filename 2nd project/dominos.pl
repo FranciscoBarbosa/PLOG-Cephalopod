@@ -33,13 +33,16 @@ dominos1(N,Sol):-
 
   board(N,Board),
   flatten(Board,FlatBoard),
-  Sol= [S1,S2,S3,S4,S5,S6,
-  S7,S8,S9,S10,S11,S12,
-  S13,S14,S15,S16,S17,S18,
-  S19,S20,S21,S22,S23,S24,
-  S25,S26,S27,S28,S29,S30],
-  Width is 6,
+  length(FlatBoard,Length),
+%  Sol= [S1,S2,S3,S4,S5,S6,
+%  S7,S8,S9,S10,S11,S12,
+%  S13,S14,S15,S16,S17,S18,
+%  S19,S20,S21,S22,S23,S24,
+%  S25,S26,S27,S28,S29,S30],
+  length(Sol,Length),
 
+  determineWidth(Board,Width),
+  %Width is 6,
 
   joinSolBoard(Sol,FlatBoard,SolBoard),
 
@@ -47,11 +50,12 @@ dominos1(N,Sol):-
   getAllAdjacentCellsFunctor(SolBoard,Width,AdjacentsFunctor),
 
   %domain
-  domain(Sol,1,15),
+  DomainUpperBound is Length//2,
+  domain(Sol,1,DomainUpperBound),
 
   %restricoes
   %talvez seja redundante mas pode aumentar eficiencia
-  restrainEveryValue(Sol,15),
+  restrainEveryValue(Sol,DomainUpperBound),
   restrainAdjacentCells(Sol,Adjacents),
   restrainAdjacentCellsFunctor(SolBoard,AdjacentsFunctor),
   restrainBoard(Sol,FlatBoard),
@@ -107,6 +111,9 @@ getAdjacent(Sol,Width,Index,Adjacent):-
     R is Index1 mod Width,
     R \= 0,
     nth0(Index1,Sol,Adjacent).
+
+determineWidth([H|_],Width):-
+  length(H,Width).
 
 %Retrona lista em que cada elemento é Sol-Board
 joinSolBoard(Sol,Board,SolBoard):-
