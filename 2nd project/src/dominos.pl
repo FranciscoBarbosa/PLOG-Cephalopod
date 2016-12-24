@@ -44,7 +44,12 @@ dominos1(N,Sol):-
   restrainAdjacentCellsFunctor(SolBoard,AdjacentsFunctor),
   restrainBoard(Sol,FlatBoard),
 
+
   labeling([],Sol),
+  
+  statistics(walltime, [_, ElapsedTime | _]),
+  format('~nElapsed time: ~3d ~n', ElapsedTime),
+  fd_statistics,
   write(Sol),nl.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
